@@ -284,10 +284,10 @@ Resources:
     Properties:
       TableName: NotifyTable
       AttributeDefinitions:
-        - AttributeName: ID
+        - AttributeName: PK
           AttributeType: S
       KeySchema:
-        - AttributeName: ID
+        - AttributeName: PK
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
 
