@@ -206,14 +206,14 @@ Resources:
         - SQSPollerPolicy:
             QueueName: !Ref SQSNotifyLowPriorityQueue
         - DynamoDBCrudPolicy:
-            TableName: !Ref NotifyTable
+            TableName: !Ref NotifyDbTable
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt SNSNotifyAlert.TopicName 
       Architectures:
         - x86_64
       Environment:
         Variables: 
-          DYNAMODB_TABLE_NAME: !Ref NotifyTable
+          DYNAMODB_TABLE_NAME: !Ref NotifyDbTable
           SNS_TOPIC_ARN: !Ref SNSNotifyAlert 
       Events:
         SQSNotifyHighPriorityQueueEvent:
@@ -279,10 +279,10 @@ Resources:
         EntryPoints:
         - app.ts
 
-  NotifyTable:
+  NotifyDbTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: NotifyTable
+      TableName: NotifyDbTable
       AttributeDefinitions:
         - AttributeName: PK
           AttributeType: S
