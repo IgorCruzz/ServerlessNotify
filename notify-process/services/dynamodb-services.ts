@@ -1,15 +1,20 @@
 import { DynamoDBDocumentClient, PutCommand, PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { NotifyType } from '../types';
+import { randomUUID } from 'node:crypto';
+
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const DynamoDBService = {
     putItem: async (message: NotifyType) => {
+        const PK = randomUUID();
+
         const params: PutCommandInput = {
             TableName: process.env.DYNAMODB_TABLE_NAME,
             Item: {
-                ID: String(message.userId),
+                PK,
+                UserId: String(message.userId),
                 Message: message.message,
                 Priority: message.priority,
             },
