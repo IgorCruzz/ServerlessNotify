@@ -11,6 +11,10 @@ export const handler = async (event: SQSEvent): Promise<void> => {
             const body = JSON.parse(record.body);
             const message = JSON.parse(body.Message);
 
+            if (message.userId === 5) {
+                throw new Error('User not allowed to send notifications');
+            }
+
             await DynamoDBService.putItem({
                 message: message.message,
                 priority: message.priority,
