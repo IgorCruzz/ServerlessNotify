@@ -1,5 +1,6 @@
 import { PublishBatchCommand, PublishBatchCommandInput, SNSClient } from '@aws-sdk/client-sns';
 import { NotifyType } from '../types';
+import { randomUUID } from 'node:crypto';
 
 const snsClient = new SNSClient({});
 
@@ -7,7 +8,7 @@ export const NotifyRepository = {
     publishMessage: async (data: NotifyType[]) => {
         const publishBatchCommandInput: PublishBatchCommandInput = {
             PublishBatchRequestEntries: data.map((item) => ({
-                Id: item.userId,
+                Id: randomUUID(),
                 Message: JSON.stringify({
                     userId: item.userId,
                     message: item.message,
