@@ -1,25 +1,29 @@
-import { PublishCommand, PublishCommandInput, SNSClient } from '@aws-sdk/client-sns';
+import { PublishBatchCommand, PublishBatchCommandInput, SNSClient } from '@aws-sdk/client-sns';
 import { NotifyType } from '../types';
 
 const snsClient = new SNSClient({});
 
 export const NotifyRepository = {
-    publishMessage: async (data: NotifyType) => {
-        const publishCommandInput: PublishCommandInput = {
-            TopicArn: process.env.SNS_TOPIC_ARN,
-            Message: JSON.stringify({
-                userId: data.userId,
-                message: data.message,
-                priority: data.priority,
-            }),
-            MessageAttributes: {
-                priority: {
-                    DataType: 'String',
-                    StringValue: data.priority,
+    publishMessage: async (data: NotifyType[]) => {
+        const publishBatchCommandInput: PublishBatchCommandInput = {
+            PublishBatchRequestEntries: data.map((item) => ({
+                Id: item.userId,
+                Message: JSON.stringify({
+                    userId: item.userId,
+                    message: item.message,
+                    priority: item.priority,
+                }),
+                MessageAttributes: {
+                    priority: {
+                        DataType: 'String',
+                        StringValue: item.priority,
+                    },
                 },
-            },
+            })),
+            TopicArn: process.env.SNS_TOPIC_ARN,
         };
-        const publishCommand = new PublishCommand(publishCommandInput);
-        await snsClient.send(publishCommand);
+
+        const publishBatchCommand = new PublishBatchCommand(publishBatchCommandInput);
+        await snsClient.send(publishBatchCommand);
     },
 };

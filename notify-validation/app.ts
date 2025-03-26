@@ -4,7 +4,7 @@ import { NotifyRepository } from './services/sns-services';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const body: NotifyType = JSON.parse(event.body || '');
+        const body: NotifyType[] = JSON.parse(event.body || '');
 
         await NotifyRepository.publishMessage(body);
 
