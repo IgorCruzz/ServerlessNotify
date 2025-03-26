@@ -13,7 +13,7 @@ export const DynamoDBService = {
         const params: PutCommandInput = {
             TableName: process.env.DYNAMODB_TABLE_NAME,
             Item: {
-                PK: `NOTIFICATION#${message.userId}`,
+                PK: `USER#${message.userId}`,
                 SK: `NOTIFICATION#${PK}`,
                 Message: message.message,
                 Priority: message.priority,
