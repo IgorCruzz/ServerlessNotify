@@ -30,22 +30,24 @@ Resources:
         AllowOrigin: "'*'" 
       Models:
         NotifyValidationModel:
-          type: object
-          required: 
-            - priority
-            - message
-            - userId
-          properties:
-            priority:
-              type: string
-              enum: 
-                - HIGH
-                - MEDIUM
-                - LOW
-            message:
-              type: string
-            userId:
-              type: string 
+          type: array
+          items:
+            type: object
+            required: 
+              - priority
+              - message
+              - userId
+            properties:
+              priority:
+                type: string
+                enum: 
+                  - HIGH
+                  - MEDIUM
+                  - LOW
+              message:
+                type: string
+              userId:
+                type: string 
 
   NotifyUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
