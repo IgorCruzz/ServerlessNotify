@@ -13,10 +13,6 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
             const body = JSON.parse(record.body);
             const message = JSON.parse(body.Message);
 
-            if (message.userId === 5) {
-                throw new Error('User not allowed to send notifications');
-            }
-
             await DynamoDBService.putItem({
                 message: message.message,
                 priority: message.priority,
@@ -28,7 +24,7 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
                 priority: message.priority,
             });
 
-            console.log('Notificação was saved succesfully', message);
+            console.log('Notificação salva com sucesso!!!', message);
         } catch (error) {
             batchItemFailures.push({
                 itemIdentifier: record.messageId,
