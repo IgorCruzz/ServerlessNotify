@@ -1,10 +1,12 @@
-import { SQSEvent } from 'aws-lambda';
+import { SQSEvent, SQSBatchResponse } from 'aws-lambda';
 
 import { SnsService } from './services/sns-services';
 import { DynamoDBService } from './services/dynamodb-services';
 
-export const handler = async (event: SQSEvent): Promise<void> => {
+export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
     console.log('Events received -> ', event.Records.length);
+
+    const batchItemFailures = [];
 
     for (const record of event.Records) {
         try {
@@ -28,7 +30,11 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
             console.log('Notificação was saved succesfully', message);
         } catch (error) {
-            throw error;
+            batchItemFailures.push({
+                itemIdentifier: record.messageId,
+            });
         }
     }
+
+    return { batchItemFailures };
 };
