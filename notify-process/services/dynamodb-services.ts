@@ -17,6 +17,7 @@ export const DynamoDBService = {
                 UserId: String(message.userId),
                 Message: message.message,
                 Priority: message.priority,
+                Timestamp: new Date().toISOString(),
             },
             ConditionExpression: 'attribute_not_exists(ID)',
         };
