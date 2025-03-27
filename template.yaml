@@ -30,26 +30,34 @@ Resources:
         AllowOrigin: "'*'" 
       Models:
         NotifyValidationModel:
-          type: array
-          minItems: 1
-          maxItems: 10
-          items:
-            type: object
-            required: 
-              - priority
-              - message
-              - userId
-            properties:
-              priority:
-                type: string
-                enum: 
-                  - HIGH
-                  - MEDIUM
-                  - LOW
-              message:
-                type: string
-              userId:
-                type: string 
+          type: object
+          required: 
+            - notifications
+          properties:
+            notifications:
+              type: array
+              minItems: 1
+              maxItems: 10
+              items:
+                type: object
+                required: 
+                  - priority
+                  - message
+                  - userId
+                properties:
+                  priority:
+                    type: string
+                    enum: 
+                      - HIGH
+                      - MEDIUM
+                      - LOW
+                  message:
+                    type: string
+                    minLength: 1
+                    maxLength: 255
+                  userId:
+                    type: string 
+                    format: uuid
 
   NotifyUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
