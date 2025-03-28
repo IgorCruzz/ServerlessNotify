@@ -35,7 +35,7 @@ Resources:
             - notifications
           properties:
             notifications:
-              type: array
+              type: array 
               items:
                 type: object
                 required: 
@@ -369,6 +369,9 @@ Resources:
             QueueName: !Ref SQSNotifyLowPriorityDLQ 
       Architectures:
         - x86_64  
+      Environment:
+        Variables:  
+          SNS_TOPIC_ARN: !Ref SNSNotifyAlert 
       Events:
         SQSNotifyHighPriorityDLQEvent:
           Type: SQS 
