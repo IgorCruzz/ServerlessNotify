@@ -4,14 +4,16 @@ import { SnsService } from './services/sns-services';
 import { DynamoDBService } from './services/dynamodb-services';
 
 export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
-    console.log('Events received -> ', event.Records.length);
-
     const batchItemFailures = [];
 
     for (const record of event.Records) {
         try {
             const body = JSON.parse(record.body);
             const message = JSON.parse(body.Message);
+
+            if (message.message === 'error') {
+                throw new Error('Simulando erro para teste');
+            }
 
             await DynamoDBService.putItem({
                 message: message.message,
