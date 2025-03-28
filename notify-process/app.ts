@@ -32,6 +32,8 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
         } catch (error) {
             console.error('Erro ao processar a mensagem:', error);
 
+            console.log(record.messageId)
+
             batchItemFailures.push({
                 itemIdentifier: record.messageId,
             });
