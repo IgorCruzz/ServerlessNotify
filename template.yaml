@@ -57,41 +57,32 @@ Resources:
                   userId:
                     type: string 
                     format: uuid
+      Auth:
+        ApiKeyRequired: true
+        UsagePlan: 
+          UsagePlanName: NotifyUsagePlan
+          CreateUsagePlan: PER_API
+          Description: Usage plan for this API
+          Quota:
+            Limit: 50
+            Period: DAY 
+          Tags:
+            - Key: Name
+              Value: NotifyUsagePlan
+            - Key: Environment
+              Value: !Ref AWS::StackName
+            - Key: Project
+              Value: Notify
+            - Key: Version
+              Value: 1.0.0
+            - Key: Description
+              Value: Notify Usage Plan
       Tags:
         Name: NotifyRestApi
         Environment: !Ref AWS::StackName
         Project: Notify
         Version: 1.0.0
-        Description: Notify API
-
-  NotifyUsagePlan:
-    Type: AWS::ApiGateway::UsagePlan
-    Properties:
-      UsagePlanName: NotifyUsagePlan
-      ApiStages:
-        - ApiId: !Ref NotifyRestApi
-          Stage: Prod
-      Description: NotifyUsagePlan
-      Quota:
-        Limit: 50
-        Period: DAY
-
-  NotifyApiKey:
-    Type: AWS::ApiGateway::ApiKey
-    Properties:
-      Name: NotifyApiKey
-      Description: NotifyApiKey
-      Enabled: true
-      StageKeys:
-        - RestApiId: !Ref NotifyRestApi
-          StageName: Prod
-  
-  NotifyUsagePlanKey:
-    Type: AWS::ApiGateway::UsagePlanKey
-    Properties:
-      KeyId: !Ref NotifyApiKey
-      KeyType: API_KEY
-      UsagePlanId: !Ref NotifyUsagePlan
+        Description: Notify API 
 
   # SNS
   SNSNotifyTopic:
