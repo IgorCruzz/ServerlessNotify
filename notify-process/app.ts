@@ -11,6 +11,8 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
             const body = JSON.parse(record.body);
             const message = JSON.parse(body.Message);
 
+            console.log('Mensagem recebida:', message);
+
             if (message.message === 'error') {
                 throw new Error('Simulando erro para teste');
             }
@@ -28,6 +30,8 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
 
             console.log('Notificação salva com sucesso!!!', message);
         } catch (error) {
+            console.error('Erro ao processar a mensagem:', error);
+
             batchItemFailures.push({
                 itemIdentifier: record.messageId,
             });
