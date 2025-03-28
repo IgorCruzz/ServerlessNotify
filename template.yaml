@@ -18,6 +18,7 @@ Parameters:
     Description: Email address to receive notifications
 
 Resources:
+  #API GATEWAY
   NotifyRestApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -56,6 +57,12 @@ Resources:
                   userId:
                     type: string 
                     format: uuid
+      Tags:
+        Name: NotifyRestApi
+        Environment: !Ref AWS::StackName
+        Project: Notify
+        Version: 1.0.0
+        Description: Notify API
 
   NotifyUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
@@ -66,7 +73,7 @@ Resources:
           Stage: Prod
       Description: NotifyUsagePlan
       Quota:
-        Limit: 5
+        Limit: 50
         Period: DAY
 
   NotifyApiKey:
@@ -78,7 +85,7 @@ Resources:
       StageKeys:
         - RestApiId: !Ref NotifyRestApi
           StageName: Prod
-
+  
   NotifyUsagePlanKey:
     Type: AWS::ApiGateway::UsagePlanKey
     Properties:
@@ -86,11 +93,40 @@ Resources:
       KeyType: API_KEY
       UsagePlanId: !Ref NotifyUsagePlan
 
+  # SNS
   SNSNotifyTopic:
     Type: AWS::SNS::Topic
     Properties:
       DisplayName: NotifyTopic
       TopicName: NotifyTopic
+      Tags:
+        - Key: Name
+          Value: NotifyTopic
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Topic
+  
+  SNSNotifyAlert:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: NotifyAlertTopic
+      TopicName: NotifyAlertTopic
+      Tags:
+        - Key: Name
+          Value: NotifyAlertTopic
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Alert Topic
   
   SNSNotifyHighPrioritySubscription:
     Type: AWS::SNS::Subscription
@@ -100,7 +136,7 @@ Resources:
       Endpoint: !GetAtt SQSNotifyHighPriorityQueue.Arn
       FilterPolicy: 
         priority: 
-          - HIGH
+          - HIGH 
   
   SNSNotifyMediumPrioritySubscription:
     Type: AWS::SNS::Subscription
@@ -120,8 +156,16 @@ Resources:
       Endpoint: !GetAtt SQSNotifyLowPriorityQueue.Arn
       FilterPolicy: 
         priority: 
-          - LOW 
-  
+          - LOW  
+
+  SNSNotifyAlertSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      TopicArn: !Ref SNSNotifyAlert
+      Endpoint: !Ref Email
+
+  # SQS
   SQSNotifyHighPriorityQueue:
     Type: AWS::SQS::Queue
     Properties:     
@@ -131,6 +175,17 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyHighPriorityDLQ.Arn
         maxReceiveCount: 5
+      Tags:
+        - Key: Name
+          Value: NotifyHighPriorityQueue
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify High Priority Queue
   
   SQSNotifyMediumPriorityQueue:
     Type: AWS::SQS::Queue
@@ -141,6 +196,17 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyMediumPriorityDLQ.Arn
         maxReceiveCount: 5
+      Tags:
+        - Key: Name
+          Value: NotifyMediumPriorityQueue
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Medium Priority Queue
   
   SQSNotifyLowPriorityQueue:
     Type: AWS::SQS::Queue
@@ -151,6 +217,17 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyLowPriorityDLQ.Arn
         maxReceiveCount: 5
+      Tags:
+        - Key: Name
+          Value: NotifyLowPriorityQueue
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Low Priority Queue
   
   SQSNotifyHighPriorityQueuePolicy:
     Type: AWS::SQS::QueuePolicy
@@ -200,6 +277,106 @@ Resources:
               ArnEquals:
                 aws:SourceArn: !Ref SNSNotifyTopic
 
+  SQSNotifyLowPriorityDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NotifyLowPriorityDLQ
+      VisibilityTimeout: 30
+      MessageRetentionPeriod: 345600
+      Tags:
+        - Key: Name
+          Value: NotifyLowPriorityDLQ
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Low Priority DLQ
+  
+  SQSNotifyMediumPriorityDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NotifyMediumPriorityDLQ
+      VisibilityTimeout: 30
+      MessageRetentionPeriod: 345600
+      Tags:
+        - Key: Name
+          Value: NotifyMediumPriorityDLQ
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify Medium Priority DLQ
+  
+  SQSNotifyHighPriorityDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NotifyHighPriorityDLQ
+      VisibilityTimeout: 30
+      MessageRetentionPeriod: 345600
+      Tags:
+        - Key: Name
+          Value: NotifyHighPriorityDLQ
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify High Priority DLQ
+
+  # Lambda  
+  NotifyValidationFunction:
+    Type: AWS::Serverless::Function  
+    Properties:    
+      FunctionName: NotifyValidationFunction
+      CodeUri: notify-validation/
+      Handler: app.handler
+      Runtime: nodejs20.x
+      MemorySize: 128
+      Policies: 
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt SNSNotifyTopic.TopicName 
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref SNSNotifyTopic 
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties: 
+            RestApiId: !Ref NotifyRestApi
+            Path: /notifications
+            Method: post
+            Auth:
+              ApiKeyRequired: true
+            RequestModel:
+              Model: NotifyValidationModel
+              Required: True
+              ValidateBody: True
+              ValidateParameters: True
+      Tags:
+        Name: NotifyValidationFunction
+        Environment: !Ref AWS::StackName
+        Project: Notify
+        Version: 1.0.0
+        Description: Notify Validation Function
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+        - app.ts
+  
   NotifyProcessFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -241,6 +418,12 @@ Resources:
           Properties:
             Queue: !GetAtt SQSNotifyLowPriorityQueue.Arn
             BatchSize: 10
+      Tags:
+        Name: NotifyProcessFunction
+        Environment: !Ref AWS::StackName
+        Project: Notify
+        Version: 1.0.0
+        Description: Notify Process Function
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:
@@ -249,108 +432,6 @@ Resources:
         Sourcemap: true
         EntryPoints:
         - app.ts
-
-  NotifyValidationFunction:
-    Type: AWS::Serverless::Function  
-    Properties:    
-      FunctionName: NotifyValidationFunction
-      CodeUri: notify-validation/
-      Handler: app.handler
-      Runtime: nodejs20.x
-      MemorySize: 128
-      Policies: 
-        - SNSPublishMessagePolicy:
-            TopicName: !GetAtt SNSNotifyTopic.TopicName 
-      Architectures:
-      - x86_64
-      Environment:
-        Variables:
-          SNS_TOPIC_ARN: !Ref SNSNotifyTopic 
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties: 
-            RestApiId: !Ref NotifyRestApi
-            Path: /notifications
-            Method: post
-            Auth:
-              ApiKeyRequired: true
-            RequestModel:
-              Model: NotifyValidationModel
-              Required: True
-              ValidateBody: True
-              ValidateParameters: True
-    Metadata: 
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: es2020
-        Sourcemap: true
-        EntryPoints:
-        - app.ts
-
-  NotifyDbTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: NotifyDynamoTable
-      AttributeDefinitions:
-        - AttributeName: PK
-          AttributeType: S
-        - AttributeName: SK
-          AttributeType: S
-        - AttributeName: GSI1PK
-          AttributeType: S
-        - AttributeName: GSI1SK
-          AttributeType: S
-      KeySchema:
-        - AttributeName: PK
-          KeyType: HASH
-        - AttributeName: SK
-          KeyType: RANGE
-      GlobalSecondaryIndexes:
-        - IndexName: GSI1
-          KeySchema:
-            - AttributeName: GSI1PK
-              KeyType: HASH
-            - AttributeName: GSI1SK
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
-      BillingMode: PAY_PER_REQUEST
-
-  SNSNotifyAlert:
-    Type: AWS::SNS::Topic
-    Properties:
-      DisplayName: NotifyAlertTopic
-      TopicName: NotifyAlertTopic
-
-  SNSNotifyAlertSubscription:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Protocol: email
-      TopicArn: !Ref SNSNotifyAlert
-      Endpoint: !Ref Email  
-
-  SQSNotifyLowPriorityDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: NotifyLowPriorityDLQ
-      VisibilityTimeout: 30
-      MessageRetentionPeriod: 345600
-  
-  SQSNotifyMediumPriorityDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: NotifyMediumPriorityDLQ
-      VisibilityTimeout: 30
-      MessageRetentionPeriod: 345600
-  
-  SQSNotifyHighPriorityDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: NotifyHighPriorityDLQ
-      VisibilityTimeout: 30
-      MessageRetentionPeriod: 345600
 
   NotifyProcessDLQFunction:
     Type: AWS::Serverless::Function
@@ -390,6 +471,13 @@ Resources:
           Properties:
             Queue: !GetAtt SQSNotifyLowPriorityDLQ.Arn
             BatchSize: 10
+      Tags:
+        Name: NotifyProcessDLQFunction
+        Environment: !Ref AWS::StackName
+        Project: Notify
+        Version: 1.0.0
+        Description: Notify Process DLQ Function
+        
     Metadata: 
       BuildMethod: esbuild
       BuildProperties:
@@ -397,5 +485,47 @@ Resources:
         Target: es2020
         Sourcemap: true
         EntryPoints:
-        - app.ts   
+        - app.ts
+
+  # DynamoDB
+  NotifyDbTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: NotifyDynamoTable
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1PK
+          AttributeType: S
+        - AttributeName: GSI1SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1PK
+              KeyType: HASH
+            - AttributeName: GSI1SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      BillingMode: PAY_PER_REQUEST
+      Tags:
+        - Key: Name
+          Value: NotifyDynamoTable
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify DynamoDB Table
+   
  
