@@ -367,6 +367,8 @@ Resources:
             QueueName: !Ref SQSNotifyMediumPriorityDLQ
         - SQSPollerPolicy:
             QueueName: !Ref SQSNotifyLowPriorityDLQ 
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt SNSNotifyAlert.TopicName 
       Architectures:
         - x86_64  
       Environment:
