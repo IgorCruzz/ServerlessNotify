@@ -12,7 +12,8 @@
     "compile": "tsc",
     "test": "npm run compile && npm run unit"
   },
-  "dependencies": { 
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.777.0",
     "esbuild": "^0.14.14"
   },
   "devDependencies": {
