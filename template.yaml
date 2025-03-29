@@ -28,7 +28,7 @@ Resources:
       Cors: 
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
-        AllowOrigin: "'*'" 
+        AllowOrigin: "'*'"  
       Models:
         NotifyValidationModel:
           type: object
@@ -56,27 +56,7 @@ Resources:
                     maxLength: 255
                   userId:
                     type: string 
-                    format: uuid
-      Auth:
-        ApiKeyRequired: true
-        UsagePlan: 
-          UsagePlanName: NotifyUsagePlan
-          CreateUsagePlan: PER_API
-          Description: Usage plan for this API
-          Quota:
-            Limit: 50
-            Period: DAY 
-          Tags:
-            - Key: Name
-              Value: NotifyUsagePlan
-            - Key: Environment
-              Value: !Ref AWS::StackName
-            - Key: Project
-              Value: Notify
-            - Key: Version
-              Value: 1.0.0
-            - Key: Description
-              Value: Notify Usage Plan
+                    format: uuid       
       Tags:
         Name: NotifyRestApi
         Environment: !Ref AWS::StackName
@@ -348,9 +328,7 @@ Resources:
           Properties: 
             RestApiId: !Ref NotifyRestApi
             Path: /notifications
-            Method: post
-            Auth:
-              ApiKeyRequired: true
+            Method: post 
             RequestModel:
               Model: NotifyValidationModel
               Required: True
