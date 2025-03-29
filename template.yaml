@@ -146,6 +146,7 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyHighPriorityDLQ.Arn
         maxReceiveCount: 5
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyHighPriorityQueue
@@ -167,6 +168,7 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyMediumPriorityDLQ.Arn
         maxReceiveCount: 5
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyMediumPriorityQueue
@@ -188,6 +190,7 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt SQSNotifyLowPriorityDLQ.Arn
         maxReceiveCount: 5
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyLowPriorityQueue
@@ -257,6 +260,7 @@ Resources:
       QueueName: NotifyLowPriorityDLQ
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyLowPriorityDLQ
@@ -275,6 +279,7 @@ Resources:
       QueueName: NotifyMediumPriorityDLQ
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyMediumPriorityDLQ
@@ -293,6 +298,7 @@ Resources:
       QueueName: NotifyHighPriorityDLQ
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
           Value: NotifyHighPriorityDLQ
