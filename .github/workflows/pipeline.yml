@@ -2,17 +2,7 @@ on:
   push:
     branches:
       - main
-jobs:   
-  credentials:
-    runs-on: ubuntu-latest
-    steps: 
-      - name: Set AWS Credentials 
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-  
+jobs:    
   validate:
     runs-on: ubuntu-latest 
     steps: 
@@ -28,11 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate
     steps:
-      - uses: actions/checkout@v3 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.x' 
+      - uses: actions/checkout@v3  
       - uses: aws-actions/setup-sam@v2
+      - name: Set AWS Credentials 
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
       - name: Build
         run: sam build --use-container
       - name: Deploy
