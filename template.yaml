@@ -144,7 +144,7 @@ Resources:
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
       RedrivePolicy:
-        deadLetterTargetArn: !GetAtt SQSNotifyHighPriorityDLQ.Arn
+        deadLetterTargetArn: !GetAtt SQSNotifyDLQ.Arn
         maxReceiveCount: 5
       ReceiveMessageWaitTimeSeconds: 20
       Tags:
@@ -166,7 +166,7 @@ Resources:
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
       RedrivePolicy:
-        deadLetterTargetArn: !GetAtt SQSNotifyMediumPriorityDLQ.Arn
+        deadLetterTargetArn: !GetAtt SQSNotifyDLQ.Arn
         maxReceiveCount: 5
       ReceiveMessageWaitTimeSeconds: 20
       Tags:
@@ -188,7 +188,7 @@ Resources:
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
       RedrivePolicy:
-        deadLetterTargetArn: !GetAtt SQSNotifyLowPriorityDLQ.Arn
+        deadLetterTargetArn: !GetAtt SQSNotifyDLQ.Arn
         maxReceiveCount: 5
       ReceiveMessageWaitTimeSeconds: 20
       Tags:
@@ -254,16 +254,16 @@ Resources:
               ArnEquals:
                 aws:SourceArn: !Ref SNSNotifyTopic
 
-  SQSNotifyLowPriorityDLQ:
+  SQSNotifyDLQ:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: NotifyLowPriorityDLQ
+      QueueName: SQSNotifyDLQ
       VisibilityTimeout: 30
       MessageRetentionPeriod: 345600
       ReceiveMessageWaitTimeSeconds: 20
       Tags:
         - Key: Name
-          Value: NotifyLowPriorityDLQ
+          Value: SQSNotifyDLQ
         - Key: Environment
           Value: !Ref AWS::StackName
         - Key: Project
@@ -271,45 +271,7 @@ Resources:
         - Key: Version
           Value: 1.0.0
         - Key: Description
-          Value: Notify Low Priority DLQ
-  
-  SQSNotifyMediumPriorityDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: NotifyMediumPriorityDLQ
-      VisibilityTimeout: 30
-      MessageRetentionPeriod: 345600
-      ReceiveMessageWaitTimeSeconds: 20
-      Tags:
-        - Key: Name
-          Value: NotifyMediumPriorityDLQ
-        - Key: Environment
-          Value: !Ref AWS::StackName
-        - Key: Project
-          Value: Notify
-        - Key: Version
-          Value: 1.0.0
-        - Key: Description
-          Value: Notify Medium Priority DLQ
-  
-  SQSNotifyHighPriorityDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: NotifyHighPriorityDLQ
-      VisibilityTimeout: 30
-      MessageRetentionPeriod: 345600
-      ReceiveMessageWaitTimeSeconds: 20
-      Tags:
-        - Key: Name
-          Value: NotifyHighPriorityDLQ
-        - Key: Environment
-          Value: !Ref AWS::StackName
-        - Key: Project
-          Value: Notify
-        - Key: Version
-          Value: 1.0.0
-        - Key: Description
-          Value: Notify High Priority DLQ
+          Value: Notify DLQ 
 
   # Lambda  
   NotifyValidationFunction:
@@ -421,11 +383,7 @@ Resources:
       MemorySize: 128
       Policies: 
         - SQSPollerPolicy:
-            QueueName: !Ref SQSNotifyHighPriorityDLQ
-        - SQSPollerPolicy:
-            QueueName: !Ref SQSNotifyMediumPriorityDLQ
-        - SQSPollerPolicy:
-            QueueName: !Ref SQSNotifyLowPriorityDLQ 
+            QueueName: !Ref SQSNotifyDLQ 
         - SNSPublishMessagePolicy:
             TopicName: !GetAtt SNSNotifyAlert.TopicName 
       Architectures:
@@ -434,21 +392,11 @@ Resources:
         Variables:  
           SNS_TOPIC_ARN: !Ref SNSNotifyAlert 
       Events:
-        SQSNotifyHighPriorityDLQEvent:
+        SQSNotifyDLQevent:
           Type: SQS 
           Properties:
-            Queue: !GetAtt SQSNotifyHighPriorityDLQ.Arn
-            BatchSize: 10
-        SQSNotifyMediumPriorityDLQEvent:
-          Type: SQS 
-          Properties:
-            Queue: !GetAtt SQSNotifyMediumPriorityDLQ.Arn
-            BatchSize: 10
-        SQSNotifyLowPriorityDLQEvent:
-          Type: SQS 
-          Properties:
-            Queue: !GetAtt SQSNotifyLowPriorityDLQ.Arn
-            BatchSize: 10
+            Queue: !GetAtt SQSNotifyDLQ.Arn
+            BatchSize: 10 
       Tags:
         Name: NotifyProcessDLQFunction
         Environment: !Ref AWS::StackName
