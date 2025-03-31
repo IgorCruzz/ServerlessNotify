@@ -348,16 +348,22 @@ Resources:
           Properties:
             Queue: !GetAtt SQSNotifyHighPriorityQueue.Arn
             BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
         SQSNotifyMediumPriorityQueueEvent:
           Type: SQS 
           Properties:
             Queue: !GetAtt SQSNotifyMediumPriorityQueue.Arn
             BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
         SQSNotifyLowPriorityQueueEvent:
           Type: SQS 
           Properties:
             Queue: !GetAtt SQSNotifyLowPriorityQueue.Arn
             BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
       Tags:
         Name: NotifyProcessFunction
         Environment: !Ref AWS::StackName
