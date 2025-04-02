@@ -459,5 +459,47 @@ Resources:
           Value: 1.0.0
         - Key: Description
           Value: Notify DynamoDB Table
-   
- 
+  
+  # WAF
+  NotifyWAFWebACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: NotifyWAFWebACL
+      Description: Notify WAF Web ACL
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {} 
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: NotifyWAFWebACL
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: RateLimitRule
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 100
+              AggregateKeyType: IP
+          Action:
+            Block: {}
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitRule
+            SampledRequestsEnabled: true
+      Tags:
+        - Key: Name
+          Value: NotifyWAFWebACL
+        - Key: Environment
+          Value: !Ref AWS::StackName
+        - Key: Project
+          Value: Notify
+        - Key: Version
+          Value: 1.0.0
+        - Key: Description
+          Value: Notify WAF Web ACL
+
+  NotifyWAFWebACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${NotifyRestApi}
+      WebACLArn: !GetAtt NotifyWAFWebACL.Arn 
