@@ -16,6 +16,10 @@ Parameters:
   Email:
     Type: String
     Description: Email address to receive notifications
+  StageName:
+    Type: String
+    Default: Prod
+    Description: The stage name for the API Gateway
 
 Resources:
   #API GATEWAY
@@ -23,7 +27,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       Name: NotifyRestApi
-      StageName: Prod
+      StageName: !Ref StageName
       Description: Notify API
       Cors: 
         AllowMethods: "'*'"
@@ -501,5 +505,5 @@ Resources:
   NotifyWAFWebACLAssociation:
     Type: AWS::WAFv2::WebACLAssociation
     Properties:
-      ResourceArn: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/Prod
+      ResourceArn: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
       WebACLArn: !GetAtt NotifyWAFWebACL.Arn  
