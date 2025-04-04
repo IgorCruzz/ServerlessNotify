@@ -505,5 +505,8 @@ Resources:
   NotifyWAFWebACLAssociation:
     Type: AWS::WAFv2::WebACLAssociation
     Properties:
-      ResourceArn: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
+      ResourceArn: 
+        Fn::Sub: 
+          - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${StageName}
+          - ApiId: !Ref NotifyRestApi
       WebACLArn: !GetAtt NotifyWAFWebACL.Arn  
