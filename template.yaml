@@ -22,7 +22,7 @@ Parameters:
     Description: The stage name for the API Gateway
 
 Resources:
-  #API GATEWAY
+  #API GATEWAY 
   NotifyRestApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -504,19 +504,7 @@ Resources:
 
   NotifyWAFWebACLAssociation:
     Type: AWS::WAFv2::WebACLAssociation
+    DependsOn: NotifyRestApi
     Properties:
-      ResourceArn: 
-        Fn::Sub:
-          - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
-          - ApiId: !Ref NotifyRestApi  
-            Stage: !Ref StageName
-      WebACLArn: !GetAtt NotifyWAFWebACL.Arn
-
-Outputs:
-  WAFResourceArnDebug:
-    Description: ARN do API Gateway usado na associação com o WAF
-    Value:
-      Fn::Sub:
-        - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
-        - ApiId: !Ref NotifyRestApi 
-          Stage: !Ref StageName
+      ResourceArn:  !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
+      WebACLArn: !GetAtt NotifyWAFWebACL.Arn 
