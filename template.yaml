@@ -507,6 +507,6 @@ Resources:
     Properties:
       ResourceArn: 
         Fn::Sub: 
-          - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${StageName}
-          - ApiId: !Ref NotifyRestApi
+          - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
+          - ApiId: !GetAtt NotifyRestApi.ApiId
       WebACLArn: !GetAtt NotifyWAFWebACL.Arn  
