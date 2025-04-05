@@ -506,7 +506,17 @@ Resources:
     Type: AWS::WAFv2::WebACLAssociation
     Properties:
       ResourceArn: 
-        Fn::Sub: 
+        Fn::Sub:
           - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
-          - ApiId: !GetAtt NotifyRestApi.ApiId
-      WebACLArn: !GetAtt NotifyWAFWebACL.Arn  
+          - ApiId: !Ref NotifyRestApi 
+          - Stage: !Ref StageName
+      WebACLArn: !GetAtt NotifyWAFWebACL.Arn
+
+Outputs:
+  WAFResourceArnDebug:
+    Description: ARN do API Gateway usado na associação com o WAF
+    Value:
+      Fn::Sub:
+        - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
+        - ApiId: !Ref NotifyRestApi 
+        - Stage: !Ref StageName
