@@ -458,8 +458,7 @@ Resources:
   
   # WAF
   NotifyWAFWebACL:
-    Type: AWS::WAFv2::WebACL
-    DependsOn: NotifyRestApi
+    Type: AWS::WAFv2::WebACL 
     Properties:
       Name: NotifyWAFWebACL
       Description: Notify WAF Web ACL
@@ -496,15 +495,12 @@ Resources:
           Value: Notify WAF Web ACL 
   
   NotifyWAFWebACLAssociation:
-    Type: AWS::WAFv2::WebACLAssociation
-    DependsOn:
-      - NotifyRestApi
-      - NotifyWAFWebACL      
+    Type: AWS::WAFv2::WebACLAssociation     
     Properties:
-      ResourceArn: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
-      WebACLArn: !GetAtt NotifyWAFWebACL.Arn 
-
-Outputs: 
-  NotifyDbTableName:
-    Description: TESTE
-    Value: !Sub arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
+      Stage: !Ref NotifyRestApi.Stage
+      ResourceArn: 
+        !Sub 
+        - arn:aws:apigateway:${AWS::Region}::/restapis/${NotifyRestApi}/stages/${StageName}
+        - NotifyRestApi: !Ref NotifyRestApi
+          StageName: !Ref StageName
+      WebACLArn: !GetAtt NotifyWAFWebACL.Arn  
