@@ -508,8 +508,8 @@ Resources:
       ResourceArn: 
         Fn::Sub:
           - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
-          - ApiId: !Ref NotifyRestApi 
-          - Stage: !Ref StageName
+          - ApiId: !Ref NotifyRestApi  
+            Stage: !Ref StageName
       WebACLArn: !GetAtt NotifyWAFWebACL.Arn
 
 Outputs:
@@ -519,4 +519,4 @@ Outputs:
       Fn::Sub:
         - arn:aws:apigateway:${AWS::Region}::/restapis/${ApiId}/stages/${Stage}
         - ApiId: !Ref NotifyRestApi 
-        - Stage: !Ref StageName
+          Stage: !Ref StageName
