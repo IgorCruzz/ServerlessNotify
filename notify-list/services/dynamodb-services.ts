@@ -1,4 +1,4 @@
-import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand, QueryCommandInput, QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { NotifyType } from '../types';
 
@@ -22,6 +22,8 @@ export const DynamoDBService = {
 
         const command = new QueryCommand(params);
 
-        await docClient.send(command);
+        const notifications: QueryCommandOutput = await docClient.send(command);
+
+        return { count: notifications.Count, items: notifications.Items };
     },
 };
