@@ -4,7 +4,11 @@ Description: >
   serverless-notify
 
 Globals:
-  Function:
+  Function:    
+    MemorySize: 128
+    Architectures:
+      - x86_64
+    Runtime: nodejs20.x
     Timeout: 30
     Tracing: Active     
     LoggingConfig:
@@ -284,13 +288,9 @@ Resources:
       FunctionName: NotifyValidationFunction
       CodeUri: notify-validation/
       Handler: app.handler
-      Runtime: nodejs20.x
-      MemorySize: 128
       Policies: 
         - SNSPublishMessagePolicy:
-            TopicName: !GetAtt SNSNotifyTopic.TopicName 
-      Architectures:
-      - x86_64
+            TopicName: !GetAtt SNSNotifyTopic.TopicName
       Environment:
         Variables:
           SNS_TOPIC_ARN: !Ref SNSNotifyTopic 
@@ -327,8 +327,6 @@ Resources:
       FunctionName: NotifyProcessFunction
       CodeUri: notify-process/
       Handler: app.handler  
-      Runtime: nodejs20.x
-      MemorySize: 128
       Policies: 
         - SQSPollerPolicy:
             QueueName: !Ref SQSNotifyHighPriorityQueue
@@ -339,9 +337,7 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref NotifyDbTable
         - SNSPublishMessagePolicy:
-            TopicName: !GetAtt SNSNotifyAlert.TopicName 
-      Architectures:
-        - x86_64
+            TopicName: !GetAtt SNSNotifyAlert.TopicName  
       Environment:
         Variables: 
           DYNAMODB_TABLE_NAME: !Ref NotifyDbTable
@@ -388,16 +384,12 @@ Resources:
     Properties:
       FunctionName: NotifyProcessDLQFunction
       CodeUri: notify-process-dlq/
-      Handler: app.handler  
-      Runtime: nodejs20.x
-      MemorySize: 128
+      Handler: app.handler   
       Policies: 
         - SQSPollerPolicy:
             QueueName: !Ref SQSNotifyDLQ 
         - SNSPublishMessagePolicy:
-            TopicName: !GetAtt SNSNotifyAlert.TopicName 
-      Architectures:
-        - x86_64  
+            TopicName: !GetAtt SNSNotifyAlert.TopicName  
       Environment:
         Variables:  
           SNS_TOPIC_ARN: !Ref SNSNotifyAlert 
