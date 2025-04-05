@@ -415,6 +415,35 @@ Resources:
         EntryPoints:
         - app.ts
 
+  NotificationListFunction:
+    Type: AWS::Serverless::Function
+    Properties: 
+      FunctionName: NotifyListFunction
+      CodeUri: notify-list/
+      Handler: app.handler
+      Policies: 
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NotifyDbTable
+      Environment:
+        Variables: 
+          DYNAMODB_TABLE_NAME: !Ref NotifyDbTable 
+      Events:
+        NotificationListEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref NotifyRestApi
+            Path: /notifications/{userId}
+            Method: GET
+
+    Metadata: 
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: es2020
+        Sourcemap: true
+        EntryPoints:
+        - app.ts
+
   # DynamoDB
   NotifyDbTable:
     Type: AWS::DynamoDB::Table
