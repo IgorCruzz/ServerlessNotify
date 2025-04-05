@@ -16,7 +16,7 @@ export const DynamoDBService = {
             },
             ExpressionAttributeValues: {
                 ':pk': `USER#${userId}`,
-                ':sk': 'NOTIFY#',
+                ':sk': 'NOTIFICATION#',
             },
         };
 
