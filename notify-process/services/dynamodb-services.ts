@@ -15,6 +15,7 @@ export const DynamoDBService = {
             Item: {
                 PK: `USER#${message.userId}`,
                 SK: `NOTIFICATION#${PK}`,
+                UserId: message.userId,
                 Message: message.message,
                 Priority: message.priority,
                 Timestamp: new Date().toISOString(),
