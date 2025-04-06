@@ -5,7 +5,7 @@ Description: >
 
 Globals:
   Function:    
-    MemorySize: 128
+    MemorySize: 256
     Architectures:
       - x86_64
     Runtime: nodejs20.x
