@@ -13,11 +13,16 @@ export const DynamoDBService = {
             ExpressionAttributeNames: {
                 '#PK': 'PK',
                 '#SK': 'SK',
+                '#Message': 'Message',
+                '#Priority': 'Priority',
+                '#UserId': 'UserId',
+                '#Timestamp': 'Timestamp',
             },
             ExpressionAttributeValues: {
                 ':pk': `USER#${userId}`,
                 ':sk': 'NOTIFICATION#',
             },
+            ProjectionExpression: '#Message, #Priority, #UserId, #Timestamp',
         };
 
         const command = new QueryCommand(params);
